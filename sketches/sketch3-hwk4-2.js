@@ -8,39 +8,44 @@ registerSketch('sk3', function (p) {
 
   p.draw = function () {
     p.background(245, 245, 240);
-  
-    // title
-    p.fill(40);
+
+    let progress = (p.frameCount % 300) / 300;
+
+    // shadow
     p.noStroke();
-    p.textSize(32);
-    p.textAlign(p.CENTER, p.CENTER);
-    p.text("Dumbbell Timer", p.width / 2, 120);
-  
-    // dumbbell shadow
-    p.fill(200, 200, 200, 100);
-    p.noStroke();
-    p.ellipse(p.width / 2, 460, 450, 55);
-  
-    // dumbbell bar
+    p.fill(200, 200, 200, 90);
+    p.ellipse(p.width / 2, 470, 500, 60);
+
+    // fill color
     p.fill(90);
-    p.rect(260, 380, 280, 35, 18);
-  
-    // left weights
-    p.fill(60);
+
+    // filled part from left to right
+    let fillEnd = 145 + 510 * progress;
+
+    drawFillPart(145, 330, 45, 135, fillEnd);
+    drawFillPart(190, 310, 70, 175, fillEnd);
+    drawFillPart(260, 380, 280, 35, fillEnd);
+    drawFillPart(540, 310, 70, 175, fillEnd);
+    drawFillPart(610, 330, 45, 135, fillEnd);
+
+    // dumbbell outline
+    p.noFill();
+    p.stroke(60);
+    p.strokeWeight(6);
+
     p.rect(145, 330, 45, 135, 12);
     p.rect(190, 310, 70, 175, 15);
-  
-    // right weights
+    p.rect(260, 380, 280, 35, 18);
     p.rect(540, 310, 70, 175, 15);
     p.rect(610, 330, 45, 135, 12);
-  
-    // highlights
-    p.fill(120);
-    p.rect(158, 345, 8, 105, 5);
-    p.rect(210, 330, 10, 135, 5);
-    p.rect(565, 330, 10, 135, 5);
-    p.rect(625, 345, 8, 105, 5);
-  
+
+    // percentage text
+    p.noStroke();
+    p.fill(60);
+    p.textSize(36);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.text(Math.floor(progress * 100) + "%", p.width / 2, 560);
+
     // frame
     p.noFill();
     p.stroke(0);
@@ -48,5 +53,23 @@ registerSketch('sk3', function (p) {
     p.rect(0, 0, p.width - 1, p.height - 1);
   };
 
-  p.windowResized = function () { p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE); };
+  function drawFillPart(x, y, w, h, fillEnd) {
+    let filledWidth = fillEnd - x;
+
+    if (filledWidth <= 0) {
+      return;
+    }
+
+    if (filledWidth > w) {
+      filledWidth = w;
+    }
+
+    p.noStroke();
+    p.fill(90);
+    p.rect(x, y, filledWidth, h, 12);
+  }
+
+  p.windowResized = function () {
+    p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE);
+  };
 });
