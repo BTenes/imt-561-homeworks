@@ -22,11 +22,16 @@ registerSketch('sk3', function (p) {
     // filled part from left to right
     let fillEnd = 145 + 510 * progress;
 
-    drawFillPart(145, 330, 45, 135, fillEnd);
-    drawFillPart(190, 310, 70, 175, fillEnd);
-    drawFillPart(260, 380, 280, 35, fillEnd);
-    drawFillPart(540, 310, 70, 175, fillEnd);
-    drawFillPart(610, 330, 45, 135, fillEnd);
+    // side weights: darker gray
+    drawFillPart(145, 330, 45, 135, fillEnd, 90);
+    drawFillPart(190, 310, 70, 175, fillEnd, 90);
+
+    // middle bar: lighter gray
+    drawFillPart(260, 380, 280, 35, fillEnd, 150);
+
+    // side weights: darker gray
+    drawFillPart(540, 310, 70, 175, fillEnd, 90);
+    drawFillPart(610, 330, 45, 135, fillEnd, 90);
 
     // dumbbell outline
     p.noFill();
@@ -53,22 +58,22 @@ registerSketch('sk3', function (p) {
     p.rect(0, 0, p.width - 1, p.height - 1);
   };
 
-  function drawFillPart(x, y, w, h, fillEnd) {
+  function drawFillPart(x, y, w, h, fillEnd, fillColor) {
     let filledWidth = fillEnd - x;
-
+  
     if (filledWidth <= 0) {
       return;
     }
-
+  
     if (filledWidth > w) {
       filledWidth = w;
     }
-
+  
     p.noStroke();
-    p.fill(90);
+    p.fill(fillColor);
     p.rect(x, y, filledWidth, h, 12);
   }
-
+  
   p.windowResized = function () {
     p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE);
   };
