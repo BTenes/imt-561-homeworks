@@ -45,10 +45,6 @@ registerSketch('sk2', function (p) {
     let endAngle = startAngle + progress * p.TWO_PI;
 
     p.noStroke();
-    p.fill(70, 40, 20);
-    p.textAlign(p.CENTER, p.CENTER);
-    p.textSize(40);
-    p.text("Pizza Calorie Clock", centerX, 50);
 
     // plate
     p.fill(235, 230, 220);

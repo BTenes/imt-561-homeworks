@@ -65,7 +65,12 @@ registerSketch('sk3', function (p) {
     } else if (progress === 1) {
       p.text("Time for the next set!", p.width / 2, 560);
     } else {
-      p.text(Math.floor(progress * 100) + "%", p.width / 2, 560);
+      let elapsed = (p.millis() - startTime) / 1000;
+      let remaining = Math.ceil(selectedTime - elapsed);
+    
+      if (remaining < 0) remaining = 0;
+    
+      p.text(remaining + "s", p.width / 2, 560);
     }
 
     // buttons
