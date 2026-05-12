@@ -11,9 +11,10 @@ registerSketch("sk15", function (p) {
 
   let pacersLogo = null;
   let knicksLogo = null;
+  let playerImages = {};
 
-  const CANVAS_W = 1080;
-  const CANVAS_H = 1550;
+  const CANVAS_W = 1320;
+  const CANVAS_H = 1500;
 
   const metrics = ["PTS", "TRB", "AST", "STL", "BLK", "FG%", "3P%"];
   let maxValues = {};
@@ -46,15 +47,15 @@ registerSketch("sk15", function (p) {
         knicksLogo = null;
       }
     );
+
+    loadPlayerPhotos();
   };
 
   p.setup = function () {
     p.createCanvas(CANVAS_W, CANVAS_H);
     p.textFont("Arial");
-
     loadPlayers();
     calculateMaxValues();
-
     p.noLoop();
   };
 
@@ -64,10 +65,10 @@ registerSketch("sk15", function (p) {
     drawTitle();
 
     drawTeamPanel({
-      x: 60,
+      x: 40,
       y: 185,
-      w: 465,
-      h: 1040,
+      w: 600,
+      h: 1080,
       teamName: "PACERS",
       teamColor: "#FDBB30",
       darkColor: "#002D62",
@@ -78,10 +79,10 @@ registerSketch("sk15", function (p) {
     });
 
     drawTeamPanel({
-      x: 555,
+      x: 680,
       y: 185,
-      w: 465,
-      h: 1040,
+      w: 600,
+      h: 1080,
       teamName: "KNICKS",
       teamColor: "#F58426",
       darkColor: "#006BB6",
@@ -99,6 +100,32 @@ registerSketch("sk15", function (p) {
     checkPlayerButtons(pacers, "left");
     checkPlayerButtons(knicks, "right");
   };
+
+  function loadPlayerPhotos() {
+    const photoFiles = {
+      "Tyrese Haliburton": "images/Tyrese Haliburton.png",
+      "Andrew Nembhard": "images/Andrew Nembhard.png",
+      "Aaron Nesmith": "images/Aaron Nesmith.png",
+      "Pascal Siakam": "images/Pascal Siakam.png",
+      "Myles Turner": "images/Myles Turner.png",
+
+      "Jalen Brunson": "images/Jalen Brunson.png",
+      "Mikal Bridges": "images/Mikal Bridges.png",
+      "OG Anunoby": "images/OG Anunoby.png",
+      "Josh Hart": "images/Josh Hart.png",
+      "Karl-Anthony Towns": "images/Karl-Anthony Towns.png",
+    };
+
+    for (const name in photoFiles) {
+      playerImages[name] = p.loadImage(
+        photoFiles[name],
+        function () {},
+        function () {
+          playerImages[name] = null;
+        }
+      );
+    }
+  }
 
   function loadPlayers() {
     pacers = [];
@@ -127,6 +154,7 @@ registerSketch("sk15", function (p) {
 
       if (starter) {
         player.position = starter.position;
+        player.photo = playerImages[player.name] || null;
         pacers.push(player);
       }
     }
@@ -138,6 +166,7 @@ registerSketch("sk15", function (p) {
 
       if (starter) {
         player.position = starter.position;
+        player.photo = playerImages[player.name] || null;
         knicks.push(player);
       }
     }
@@ -180,6 +209,7 @@ registerSketch("sk15", function (p) {
       team: teamName,
       name: cleanText(row.getString("Player")),
       position: "",
+      photo: null,
       age: cleanNumber(row.getString("Age")),
       fg: cleanNumber(row.getString("FG%")),
       three: cleanNumber(row.getString("3P%")),
@@ -197,6 +227,7 @@ registerSketch("sk15", function (p) {
     if (value === null || value === undefined) {
       return "";
     }
+
     return String(value).trim();
   }
 
@@ -245,7 +276,7 @@ registerSketch("sk15", function (p) {
 
     p.fill("#111827");
     p.textStyle(p.BOLD);
-    p.textSize(56);
+    p.textSize(60);
     p.text("Pacers vs Knicks", p.width / 2, 72);
 
     p.textSize(30);
@@ -288,8 +319,8 @@ registerSketch("sk15", function (p) {
     p.fill(darkColor);
     p.textAlign(p.CENTER, p.CENTER);
     p.textStyle(p.BOLD);
-    p.textSize(36);
-    p.text(teamName, x + w / 2, y + 62);
+    p.textSize(40);
+    p.text(teamName, x + w / 2, y + 65);
 
     if (players.length === 0) {
       p.fill("#111827");
@@ -302,9 +333,9 @@ registerSketch("sk15", function (p) {
 
     drawPlayerButtons(
       players,
-      x + 35,
-      y + 105,
-      w - 70,
+      x + 40,
+      y + 110,
+      w - 80,
       selectedIndex,
       side,
       teamColor,
@@ -315,39 +346,43 @@ registerSketch("sk15", function (p) {
     p.fill("#111827");
     p.textAlign(p.CENTER, p.CENTER);
     p.textStyle(p.BOLD);
-    p.textSize(27);
+    p.textSize(28);
     p.text(
       selectedPlayer.name + " (" + selectedPlayer.position + ")",
       x + w / 2,
-      y + 390
+      y + 395
     );
+
+    // Photo and radar chart are placed in the same row.
+    // The photo uses bottom alignment, so different player photos stay visually consistent.
+    drawPlayerPhoto(selectedPlayer, x + 165, y + 840, 330, 360);
 
     drawRadarChart(
       selectedPlayer,
-      x + w / 2,
-      y + 620,
-      160,
+      x + 430,
+      y + 645,
+      155,
       teamColor,
       darkColor
     );
 
-    drawAllStatsGrid(selectedPlayer, x + 35, y + 845, w - 70);
+    drawAllStatsGrid(selectedPlayer, x + 40, y + 875, w - 80);
   }
 
   function drawLogoWatermark(x, y, w, h, logo, teamName, darkColor) {
     p.push();
 
     if (logo) {
-      p.tint(255, 24);
+      p.tint(255, 18);
       p.imageMode(p.CENTER);
-      p.image(logo, x + w / 2, y + h / 2 + 60, 310, 310);
+      p.image(logo, x + w / 2, y + h / 2 + 20, 330, 330);
       p.noTint();
     } else {
-      p.fill(hexToR(darkColor), hexToG(darkColor), hexToB(darkColor), 20);
+      p.fill(hexToR(darkColor), hexToG(darkColor), hexToB(darkColor), 18);
       p.textAlign(p.CENTER, p.CENTER);
       p.textStyle(p.BOLD);
       p.textSize(70);
-      p.text(teamName, x + w / 2, y + h / 2 + 60);
+      p.text(teamName, x + w / 2, y + h / 2 + 20);
     }
 
     p.pop();
@@ -422,6 +457,34 @@ registerSketch("sk15", function (p) {
     }
   }
 
+  function drawPlayerPhoto(player, cx, bottomY, maxW, maxH) {
+    if (!player.photo) {
+      p.fill("#9ca3af");
+      p.textAlign(p.CENTER, p.CENTER);
+      p.textSize(18);
+      p.text("No photo", cx, bottomY - maxH / 2);
+      return;
+    }
+
+    const img = player.photo;
+    const imgRatio = img.width / img.height;
+    const boxRatio = maxW / maxH;
+
+    let drawW;
+    let drawH;
+
+    if (imgRatio > boxRatio) {
+      drawW = maxW;
+      drawH = maxW / imgRatio;
+    } else {
+      drawH = maxH;
+      drawW = maxH * imgRatio;
+    }
+
+    p.imageMode(p.CENTER);
+    p.image(img, cx, bottomY - drawH / 2, drawW, drawH);
+  }
+
   function drawRadarChart(player, cx, cy, radius, fillColor, lineColor) {
     const levels = 5;
     const angleStep = p.TWO_PI / metrics.length;
@@ -452,8 +515,8 @@ registerSketch("sk15", function (p) {
       p.stroke("#e5e7eb");
       p.line(cx, cy, px, py);
 
-      const labelX = cx + Math.cos(angle) * (radius + 35);
-      const labelY = cy + Math.sin(angle) * (radius + 35);
+      const labelX = cx + Math.cos(angle) * (radius + 40);
+      const labelY = cy + Math.sin(angle) * (radius + 40);
 
       p.noStroke();
       p.fill("#374151");
@@ -527,7 +590,14 @@ registerSketch("sk15", function (p) {
 
     for (let i = 0; i < 3; i++) {
       const bx = x + i * (boxWBottom + gap);
-      drawStatBox(bx, y + boxH + 14, boxWBottom, boxH, items[i + 4][0], items[i + 4][1]);
+      drawStatBox(
+        bx,
+        y + boxH + 14,
+        boxWBottom,
+        boxH,
+        items[i + 4][0],
+        items[i + 4][1]
+      );
     }
   }
 
@@ -594,13 +664,13 @@ registerSketch("sk15", function (p) {
     p.textAlign(p.CENTER, p.CENTER);
 
     p.textStyle(p.BOLD);
-    p.textSize(28);
-    p.text("Comparison insight", p.width / 2, 1300);
+    p.textSize(30);
+    p.text("Comparison insight", p.width / 2, 1350);
 
     p.fill("#374151");
     p.textStyle(p.NORMAL);
-    p.textSize(22);
-    p.text(insight, p.width / 2, 1345, 900);
+    p.textSize(23);
+    p.text(insight, p.width / 2, 1398, 980);
   }
 
   function getBestMetric(player) {
@@ -643,13 +713,13 @@ registerSketch("sk15", function (p) {
     p.text(
       "Radar values are scaled for fair comparison across different metrics.",
       p.width / 2,
-      1440,
-      900
+      1445,
+      980
     );
 
     p.textSize(14);
     p.text(
-      "Data: Pacers vs Knicks basic player stats. Interaction: click player names to compare starters.",
+      "Data: Pacers vs Knicks basic player stats. Click player names to compare starters.",
       p.width / 2,
       1480
     );
