@@ -356,9 +356,9 @@ registerSketch("sk15", function (p) {
 
     drawRadarChart(
       selectedPlayer,
-      x + 430,
+      x + 400,
       y + 645,
-      155,
+      105,
       teamColor,
       darkColor
     );
