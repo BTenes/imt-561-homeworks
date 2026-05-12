@@ -278,7 +278,7 @@ registerSketch("sk15", function (p) {
 
     p.textSize(30);
     p.fill("#374151");
-    p.text("Starter Showdown", p.width / 2, 123);
+    p.text("2025 East Finals Starter Showdown", p.width / 2, 123);
 
     p.textStyle(p.NORMAL);
     p.textSize(21);
