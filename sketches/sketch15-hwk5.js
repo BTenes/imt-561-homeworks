@@ -13,7 +13,7 @@ registerSketch("sk15", function (p) {
   let knicksLogo = null;
 
   const CANVAS_W = 1080;
-  const CANVAS_H = 1450;
+  const CANVAS_H = 1550;
 
   const metrics = ["PTS", "TRB", "AST", "STL", "BLK", "FG%", "3P%"];
   let maxValues = {};
@@ -67,7 +67,7 @@ registerSketch("sk15", function (p) {
       x: 60,
       y: 185,
       w: 465,
-      h: 940,
+      h: 1040,
       teamName: "PACERS",
       teamColor: "#FDBB30",
       darkColor: "#002D62",
@@ -81,7 +81,7 @@ registerSketch("sk15", function (p) {
       x: 555,
       y: 185,
       w: 465,
-      h: 940,
+      h: 1040,
       teamName: "KNICKS",
       teamColor: "#F58426",
       darkColor: "#006BB6",
@@ -143,11 +143,17 @@ registerSketch("sk15", function (p) {
     }
 
     pacers.sort(function (a, b) {
-      return getStarterIndex(pacersStarters, a.name) - getStarterIndex(pacersStarters, b.name);
+      return (
+        getStarterIndex(pacersStarters, a.name) -
+        getStarterIndex(pacersStarters, b.name)
+      );
     });
 
     knicks.sort(function (a, b) {
-      return getStarterIndex(knicksStarters, a.name) - getStarterIndex(knicksStarters, b.name);
+      return (
+        getStarterIndex(knicksStarters, a.name) -
+        getStarterIndex(knicksStarters, b.name)
+      );
     });
   }
 
@@ -199,11 +205,7 @@ registerSketch("sk15", function (p) {
       return 0;
     }
 
-    const cleaned = String(value)
-      .replace("%", "")
-      .replace(",", "")
-      .trim();
-
+    const cleaned = String(value).replace("%", "").replace(",", "").trim();
     const num = Number(cleaned);
 
     if (isNaN(num)) {
@@ -254,7 +256,7 @@ registerSketch("sk15", function (p) {
     p.textSize(21);
     p.fill("#6b7280");
     p.text(
-      "Click one starter from each team to compare scoring, playmaking, and defense.",
+      "Click one starter from each team to compare their performance.",
       p.width / 2,
       155
     );
@@ -320,30 +322,16 @@ registerSketch("sk15", function (p) {
       y + 390
     );
 
-    p.textStyle(p.NORMAL);
-    p.textSize(20);
-    p.fill("#4b5563");
-    p.text(
-      selectedPlayer.pts +
-        " PTS   " +
-        selectedPlayer.trb +
-        " REB   " +
-        selectedPlayer.ast +
-        " AST",
-      x + w / 2,
-      y + 427
-    );
-
     drawRadarChart(
       selectedPlayer,
       x + w / 2,
-      y + 665,
+      y + 620,
       160,
       teamColor,
       darkColor
     );
 
-    drawSmallStats(selectedPlayer, x + 55, y + 875, w - 110);
+    drawAllStatsGrid(selectedPlayer, x + 35, y + 845, w - 70);
   }
 
   function drawLogoWatermark(x, y, w, h, logo, teamName, darkColor) {
@@ -352,20 +340,29 @@ registerSketch("sk15", function (p) {
     if (logo) {
       p.tint(255, 24);
       p.imageMode(p.CENTER);
-      p.image(logo, x + w / 2, y + h / 2 + 95, 310, 310);
+      p.image(logo, x + w / 2, y + h / 2 + 60, 310, 310);
       p.noTint();
     } else {
       p.fill(hexToR(darkColor), hexToG(darkColor), hexToB(darkColor), 20);
       p.textAlign(p.CENTER, p.CENTER);
       p.textStyle(p.BOLD);
       p.textSize(70);
-      p.text(teamName, x + w / 2, y + h / 2 + 95);
+      p.text(teamName, x + w / 2, y + h / 2 + 60);
     }
 
     p.pop();
   }
 
-  function drawPlayerButtons(players, x, y, w, selectedIndex, side, teamColor, darkColor) {
+  function drawPlayerButtons(
+    players,
+    x,
+    y,
+    w,
+    selectedIndex,
+    side,
+    teamColor,
+    darkColor
+  ) {
     const buttonH = 38;
     const gap = 10;
 
@@ -502,43 +499,57 @@ registerSketch("sk15", function (p) {
       p.fill(lineColor);
       p.circle(px, py, 8);
     }
+  }
 
+  function drawAllStatsGrid(player, x, y, w) {
+    const items = [
+      ["PTS", formatValue(player.pts, 1)],
+      ["TRB", formatValue(player.trb, 1)],
+      ["AST", formatValue(player.ast, 1)],
+      ["STL", formatValue(player.stl, 1)],
+      ["BLK", formatValue(player.blk, 1)],
+      ["FG%", formatValue(player.fg, 3)],
+      ["3P%", formatValue(player.three, 3)],
+    ];
+
+    const colsTop = 4;
+    const colsBottom = 3;
+    const gap = 12;
+    const boxH = 68;
+
+    const boxWTop = (w - gap * (colsTop - 1)) / colsTop;
+    const boxWBottom = (w - gap * (colsBottom - 1)) / colsBottom;
+
+    for (let i = 0; i < 4; i++) {
+      const bx = x + i * (boxWTop + gap);
+      drawStatBox(bx, y, boxWTop, boxH, items[i][0], items[i][1]);
+    }
+
+    for (let i = 0; i < 3; i++) {
+      const bx = x + i * (boxWBottom + gap);
+      drawStatBox(bx, y + boxH + 14, boxWBottom, boxH, items[i + 4][0], items[i + 4][1]);
+    }
+  }
+
+  function drawStatBox(x, y, w, h, label, value) {
     p.noStroke();
+    p.fill("#f3f4f6");
+    p.rect(x, y, w, h, 14);
+
     p.fill("#6b7280");
     p.textAlign(p.CENTER, p.CENTER);
     p.textStyle(p.NORMAL);
     p.textSize(13);
-    p.text("normalized to starter max", cx, cy + radius + 62);
+    p.text(label, x + w / 2, y + 21);
+
+    p.fill("#111827");
+    p.textStyle(p.BOLD);
+    p.textSize(18);
+    p.text(value, x + w / 2, y + 47);
   }
 
-  function drawSmallStats(player, x, y, w) {
-    const items = [
-      ["FG%", player.fg.toFixed(3)],
-      ["3P%", player.three.toFixed(3)],
-      ["STL", player.stl.toFixed(1)],
-      ["BLK", player.blk.toFixed(1)],
-    ];
-
-    const boxW = w / items.length - 8;
-
-    for (let i = 0; i < items.length; i++) {
-      const bx = x + i * (boxW + 10);
-
-      p.noStroke();
-      p.fill("#f3f4f6");
-      p.rect(bx, y, boxW, 62, 14);
-
-      p.fill("#6b7280");
-      p.textAlign(p.CENTER, p.CENTER);
-      p.textStyle(p.NORMAL);
-      p.textSize(13);
-      p.text(items[i][0], bx + boxW / 2, y + 19);
-
-      p.fill("#111827");
-      p.textStyle(p.BOLD);
-      p.textSize(18);
-      p.text(items[i][1], bx + boxW / 2, y + 43);
-    }
+  function formatValue(value, digits) {
+    return Number(value).toFixed(digits);
   }
 
   function getMetricValue(player, metric) {
@@ -584,12 +595,12 @@ registerSketch("sk15", function (p) {
 
     p.textStyle(p.BOLD);
     p.textSize(28);
-    p.text("Comparison insight", p.width / 2, 1200);
+    p.text("Comparison insight", p.width / 2, 1300);
 
     p.fill("#374151");
     p.textStyle(p.NORMAL);
     p.textSize(22);
-    p.text(insight, p.width / 2, 1245, 900);
+    p.text(insight, p.width / 2, 1345, 900);
   }
 
   function getBestMetric(player) {
@@ -630,9 +641,9 @@ registerSketch("sk15", function (p) {
 
     p.textSize(16);
     p.text(
-      "Radar values are normalized within the selected starter dataset, so stats with different scales can be compared fairly.",
+      "Radar values are scaled for fair comparison across different metrics.",
       p.width / 2,
-      1340,
+      1440,
       900
     );
 
@@ -640,7 +651,7 @@ registerSketch("sk15", function (p) {
     p.text(
       "Data: Pacers vs Knicks basic player stats. Interaction: click player names to compare starters.",
       p.width / 2,
-      1385
+      1480
     );
   }
 
