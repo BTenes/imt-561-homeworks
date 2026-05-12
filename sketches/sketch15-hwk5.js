@@ -14,7 +14,7 @@ registerSketch("sk15", function (p) {
   let playerImages = {};
 
   const CANVAS_W = 1320;
-  const CANVAS_H = 1500;
+  const CANVAS_H = 1280;
 
   const metrics = ["PTS", "TRB", "AST", "STL", "BLK", "FG%", "3P%"];
   let maxValues = {};
@@ -91,9 +91,6 @@ registerSketch("sk15", function (p) {
       selectedIndex: selectedKnicks,
       side: "right",
     });
-
-    drawInsight();
-    drawFootnote();
   };
 
   p.mousePressed = function () {
